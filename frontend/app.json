@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "MoodMap",
+    "slug": "moodmap",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "mapboxToken": "pk.eyJ1IjoiaWx1c2hhMjA1OSIsImEiOiJjbWdnYWs0OWcwaGJ2MmtwOTRocTBpZTF5In0.2QSH0HesnhoFMYHAWuidVA"
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "This app needs access to location to show your mood on the map."
+        }
+      ]
+    ]
+  }
+}

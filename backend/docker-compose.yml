@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  moodmap-backend:
+    build: .
+    ports:
+      - "8100:8100"
+    env_file:
+      - ../.env
+    volumes:
+      - .:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8100 --reload
+    networks:
+      - public
+
+  moodmap-frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8180:8180"
+    env_file:
+      - ../.env
+    depends_on:
+      - moodmap-backend
+    networks:
+      - public
+
+networks:
+  public:
+    external: true
+    name: public
