@@ -14,6 +14,10 @@ load_dotenv()
 
 app = FastAPI(title="MoodMap API", version="1.0.0")
 
+import zoneinfo
+
+ALMATY_TZ = zoneinfo.ZoneInfo("Asia/Almaty")
+
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
@@ -96,7 +100,7 @@ async def create_mood(mood_data: MoodRequest, request: Request):
         client_ip = get_client_ip(request)
         
         # Check cooldown (3 hours)
-        three_hours_ago = datetime.utcnow() - timedelta(hours=3)
+        three_hours_ago = datetime.now(ALMATY_TZ) - timedelta(hours=1)
         existing_mood = await moods_collection.find_one({
             "ip": client_ip,
             "timestamp": {"$gte": three_hours_ago}
@@ -105,14 +109,14 @@ async def create_mood(mood_data: MoodRequest, request: Request):
         if existing_mood:
             raise HTTPException(
                 status_code=429, 
-                detail="Вы можете оставить только одно настроение за 3 часа"
+                detail="1 час = 1 настроение :)"
             )
         
         # Create new mood document
         mood_doc = {
             "ip": client_ip,
             "mood": mood_data.mood,
-            "timestamp": datetime.utcnow(),
+            "timestamp": datetime.now(ALMATY_TZ),
             "coords": {
                 "lat": mood_data.lat,
                 "lng": mood_data.lng
@@ -133,24 +137,29 @@ async def create_mood(mood_data: MoodRequest, request: Request):
 
 @app.get("/api/moods", response_model=List[MoodData])
 async def get_moods():
-    """Get mood entries from last 24 hours"""
+    """Get mood entries from last 24 hours (Almaty time)"""
     try:
         one_day_ago = datetime.utcnow() - timedelta(days=1)
         moods = []
+
         async for mood in moods_collection.find(
-            {"timestamp": {"$gte": one_day_ago}}, 
+            {"timestamp": {"$gte": one_day_ago}},
             {"_id": 0}
         ):
+            if mood.get("timestamp"):
+                mood["timestamp"] = mood["timestamp"].replace(tzinfo=None) + timedelta(hours=5)
+
             moods.append(MoodData(
                 coords=mood["coords"],
                 mood=mood["mood"],
-                # ip=mood.get("ip"),
                 ip="****",
-                timestamp=mood.get("timestamp")
+                timestamp=mood["timestamp"]
             ))
+
         return moods
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Не удалось получить настроения: {str(e)}")
+
 
 @app.get("/")
 async def root():
