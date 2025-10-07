@@ -6,7 +6,7 @@ services:
     ports:
       - "8100:8100"
     env_file:
-      - ../.env
+      - ../backend/.env
     volumes:
       - .:/app
     command: uvicorn main:app --host 0.0.0.0 --port 8100 --reload
@@ -20,7 +20,7 @@ services:
     ports:
       - "8180:8180"
     env_file:
-      - ../.env
+      - ../frontend/.env
     depends_on:
       - moodmap-backend
     networks:

@@ -2,14 +2,17 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+COPY package*.json ./
 RUN npm ci --no-audit --prefer-offline
 
 COPY . .
 
+# Собираем статику (Next.js, Expo web и т.п.)
+RUN npm run web:build
+
+# Устанавливаем легкий сервер для статики
+RUN npm install -g serve
+
 EXPOSE 8180
 
-# Run Expo web server
-CMD ["npm", "run", "web", "--", "--port", "8180", "--non-interactive"]
-
-
+CMD ["serve", "-s", "web-build", "-l", "8180"]
