@@ -10,7 +10,6 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-dist/
 downloads/
 eggs/
 .eggs/
@@ -187,7 +186,7 @@ node_modules/
 
 # Expo
 .expo/
-dist/
+# dist/
 web-build/
 expo-env.d.ts
 
